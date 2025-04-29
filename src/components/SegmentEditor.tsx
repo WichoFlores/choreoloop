@@ -20,8 +20,12 @@ const SegmentEditor: React.FC<SegmentEditorProps> = ({
 }) => {
   const handlePlaySegment = () => {
     if (videoPlayer) {
-      videoPlayer.seekTo(section.startTime, true);
-      videoPlayer.playVideo();
+      try {
+        videoPlayer.seekTo(section.startTime, true);
+        videoPlayer.playVideo();
+      } catch (error) {
+        console.error("Error playing segment:", error);
+      }
     }
   };
 
