@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { memo } from "react";
 import { VideoSection } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/services/youtubeService";
@@ -12,7 +12,7 @@ interface SegmentEditorProps {
   videoPlayer: YT.Player | null;
 }
 
-const SegmentEditor: React.FC<SegmentEditorProps> = ({
+const SegmentEditor: React.FC<SegmentEditorProps> = memo(({
   section,
   onEdit,
   onDelete,
@@ -46,6 +46,7 @@ const SegmentEditor: React.FC<SegmentEditorProps> = ({
           size="icon" 
           variant="ghost"
           onClick={handlePlaySegment}
+          type="button"
         >
           <Play className="h-4 w-4" />
         </Button>
@@ -53,6 +54,7 @@ const SegmentEditor: React.FC<SegmentEditorProps> = ({
           size="icon" 
           variant="ghost"
           onClick={() => onEdit(section)}
+          type="button"
         >
           <Edit className="h-4 w-4" />
         </Button>
@@ -60,12 +62,15 @@ const SegmentEditor: React.FC<SegmentEditorProps> = ({
           size="icon" 
           variant="ghost"
           onClick={() => onDelete(section.id)}
+          type="button"
         >
           <Trash className="h-4 w-4" />
         </Button>
       </div>
     </div>
   );
-};
+});
+
+SegmentEditor.displayName = 'SegmentEditor';
 
 export default SegmentEditor;

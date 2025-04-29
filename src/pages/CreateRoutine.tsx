@@ -1,73 +1,51 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage, 
-} from "@/components/ui/form";
-import { Slider } from "@/components/ui/slider";
-import { 
-  extractYouTubeId, 
-  getThumbnailUrl, 
-  formatTime 
-} from "@/services/youtubeService";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { extractYouTubeId, getThumbnailUrl } from "@/services/youtubeService";
 import { Routine, VideoSection } from "@/models/types";
 import { saveRoutine } from "@/services/storageService";
 import { useToast } from "@/hooks/use-toast";
-import SegmentEditor from "@/components/SegmentEditor";
 
-// Form validation schema
-const formSchema = z.object({
-  videoUrl: z.string().min(1, "Video URL is required"),
-  title: z.string().min(1, "Routine title is required"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+// Import the new modular components
+import VideoForm, { VideoFormValues } from "@/components/create-routine/VideoForm";
+import SectionForm from "@/components/create-routine/SectionForm";
+import SectionsContainer from "@/components/create-routine/SectionsContainer";
+import VideoPreview from "@/components/create-routine/VideoPreview";
 
 const CreateRoutine = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Main state variables
   const [step, setStep] = useState(1);
+  const [routineTitle, setRoutineTitle] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<YT.Player | null>(null);
   const [sections, setSections] = useState<VideoSection[]>([]);
   const [currentSection, setCurrentSection] = useState<Partial<VideoSection>>({
     title: "",
     startTime: 0,
-    endTime: 0,
+    endTime: 30,
     reps: 5,
     currentRep: 0,
     currentSpeed: 0.5,
     completed: false,
   });
+  
+  // Memoized handlers to prevent unnecessary re-renders
+  const handlePlayerReady = useCallback((player: YT.Player) => {
+    setVideoPlayer(player);
+  }, []);
 
-  // Initialize form
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      videoUrl: "",
-      title: "",
-    },
-  });
-
-  // Handle video URL submission
-  const onSubmitUrl = (data: FormValues) => {
+  const handleVideoSubmit = useCallback((data: VideoFormValues) => {
     const extractedId = extractYouTubeId(data.videoUrl);
     if (extractedId) {
       setVideoId(extractedId);
+      setRoutineTitle(data.title);
       setStep(2);
     } else {
       toast({
@@ -76,15 +54,14 @@ const CreateRoutine = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [toast]);
 
-  // Handle player ready
-  const handlePlayerReady = (player: YT.Player) => {
-    setVideoPlayer(player);
-  };
+  // Section management handlers
+  const handleSectionChange = useCallback((newSection: Partial<VideoSection>) => {
+    setCurrentSection(newSection);
+  }, []);
 
-  // Add section to routine
-  const addSection = () => {
+  const addOrUpdateSection = useCallback(() => {
     if (!currentSection.title || currentSection.startTime === undefined || currentSection.endTime === undefined) {
       toast({
         title: "Missing information",
@@ -104,7 +81,7 @@ const CreateRoutine = () => {
     }
 
     const newSection: VideoSection = {
-      id: uuidv4(),
+      id: currentSection.id || uuidv4(),
       title: currentSection.title || "",
       startTime: currentSection.startTime || 0,
       endTime: currentSection.endTime || 0,
@@ -114,43 +91,36 @@ const CreateRoutine = () => {
       completed: false,
     };
 
-    setSections([...sections, newSection]);
+    if (currentSection.id) {
+      // Update existing section
+      setSections(sections.map(section => 
+        section.id === currentSection.id ? newSection : section
+      ));
+    } else {
+      // Add new section
+      setSections([...sections, newSection]);
+    }
+
+    // Reset form with end time of last section as start time of new section
     setCurrentSection({
       title: "",
-      startTime: currentSection.endTime,
-      endTime: currentSection.endTime ? currentSection.endTime + 30 : 30,
+      startTime: newSection.endTime,
+      endTime: newSection.endTime + 30,
       reps: 5,
       currentSpeed: 0.5,
     });
-  };
+  }, [currentSection, sections, toast]);
 
-  // Edit existing section
-  const editSection = (section: VideoSection) => {
+  const editSection = useCallback((section: VideoSection) => {
     setCurrentSection(section);
-    const updatedSections = sections.filter((s) => s.id !== section.id);
-    setSections(updatedSections);
-  };
+  }, []);
 
-  // Delete section
-  const deleteSection = (sectionId: string) => {
-    const updatedSections = sections.filter((section) => section.id !== sectionId);
-    setSections(updatedSections);
-  };
+  const deleteSection = useCallback((sectionId: string) => {
+    setSections(sections.filter(section => section.id !== sectionId));
+  }, [sections]);
 
-  // Set current time as start/end time
-  const setCurrentTimeAs = (type: "start" | "end") => {
-    if (videoPlayer) {
-      const currentTime = videoPlayer.getCurrentTime();
-      if (type === "start") {
-        setCurrentSection({ ...currentSection, startTime: currentTime });
-      } else {
-        setCurrentSection({ ...currentSection, endTime: currentTime });
-      }
-    }
-  };
-
-  // Save routine
-  const saveAndContinue = () => {
+  // Save routine handler
+  const saveAndContinue = useCallback(() => {
     if (sections.length === 0) {
       toast({
         title: "No sections added",
@@ -171,7 +141,7 @@ const CreateRoutine = () => {
 
     const newRoutine: Routine = {
       id: uuidv4(),
-      title: form.getValues("title"),
+      title: routineTitle,
       videoId: videoId,
       thumbnailUrl: getThumbnailUrl(videoId),
       sections: sections,
@@ -185,7 +155,7 @@ const CreateRoutine = () => {
       description: "Your new routine has been created successfully",
     });
     navigate("/routines");
-  };
+  }, [videoId, routineTitle, sections, toast, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -195,164 +165,34 @@ const CreateRoutine = () => {
           <h1 className="text-3xl font-bold mb-8">Create New Routine</h1>
 
           {/* Step 1: Enter YouTube URL */}
-          {step === 1 && (
-            <div className="max-w-xl mx-auto">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmitUrl)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="videoUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>YouTube Video URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Routine Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="My Dance Routine" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="bg-gradient-dance w-full">Continue</Button>
-                </form>
-              </Form>
-            </div>
-          )}
+          {step === 1 && <VideoForm onSubmit={handleVideoSubmit} />}
 
           {/* Step 2: Define sections */}
           {step === 2 && videoId && (
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-semibold mb-4">Video Preview</h2>
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <YouTubeEmbed
-                    videoId={videoId}
-                    onReady={handlePlayerReady}
-                  />
-                </div>
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <h3 className="font-medium mb-2">Current Time Controls</h3>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setCurrentTimeAs("start")}
-                        className="flex-1"
-                      >
-                        Set current time as Start
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setCurrentTimeAs("end")}
-                        className="flex-1"
-                      >
-                        Set current time as End
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <VideoPreview 
+                  videoId={videoId} 
+                  onPlayerReady={handlePlayerReady} 
+                />
               </div>
 
               <div>
                 <h2 className="text-xl font-semibold mb-4">Define Sections</h2>
                 
-                <div className="bg-muted/20 p-4 rounded-lg border mb-6">
-                  <h3 className="font-medium mb-3">Add New Section</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Title</label>
-                      <Input
-                        value={currentSection.title || ""}
-                        onChange={(e) => setCurrentSection({ ...currentSection, title: e.target.value })}
-                        placeholder="Section title"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Start Time</label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={currentSection.startTime || 0}
-                            onChange={(e) => setCurrentSection({ 
-                              ...currentSection, 
-                              startTime: parseFloat(e.target.value) 
-                            })}
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {formatTime(currentSection.startTime || 0)}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">End Time</label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={currentSection.endTime || 0}
-                            onChange={(e) => setCurrentSection({ 
-                              ...currentSection, 
-                              endTime: parseFloat(e.target.value) 
-                            })}
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {formatTime(currentSection.endTime || 0)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Repetitions: {currentSection.reps}</label>
-                      <Slider
-                        value={[currentSection.reps || 5]}
-                        min={1}
-                        max={10}
-                        step={1}
-                        onValueChange={(value) => setCurrentSection({ ...currentSection, reps: value[0] })}
-                      />
-                    </div>
-                    
-                    <Button onClick={addSection} className="w-full">
-                      {currentSection.id ? "Update Section" : "Add Section"}
-                    </Button>
-                  </div>
-                </div>
+                <SectionForm
+                  currentSection={currentSection}
+                  onChange={handleSectionChange}
+                  onAddSection={addOrUpdateSection}
+                  videoPlayer={videoPlayer}
+                />
 
-                <div className="space-y-4">
-                  <h3 className="font-medium mb-2">Added Sections ({sections.length})</h3>
-                  
-                  {sections.length > 0 ? (
-                    <div className="space-y-3">
-                      {sections.map((section) => (
-                        <SegmentEditor 
-                          key={section.id} 
-                          section={section} 
-                          onEdit={editSection} 
-                          onDelete={deleteSection}
-                          videoPlayer={videoPlayer}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 bg-muted/10 rounded-lg border border-dashed">
-                      <p className="text-muted-foreground">No sections added yet</p>
-                    </div>
-                  )}
-                </div>
+                <SectionsContainer
+                  sections={sections}
+                  onEdit={editSection}
+                  onDelete={deleteSection}
+                  videoPlayer={videoPlayer}
+                />
 
                 <div className="mt-6">
                   <Button onClick={saveAndContinue} className="bg-gradient-dance w-full">
