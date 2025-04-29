@@ -45,6 +45,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = memo(({
 }) => {
   const playerRef = useRef<YT.Player | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const currentVideoIdRef = useRef<string | null>(null);
   
   // Use a stable ID based on videoId
   const playerId = `youtube-player-${videoId}`;
@@ -79,17 +80,15 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = memo(({
           console.error("Error destroying previous player:", error);
         }
         playerRef.current = null;
+        currentVideoIdRef.current = null;
       }
     };
     
     // Don't recreate if player exists and is for the same video
-    if (playerRef.current) {
-      const currentVideoId = playerRef.current.getVideoData()?.video_id;
-      if (currentVideoId === videoId) {
-        return; // Same video, don't recreate
-      } else {
-        cleanup(); // Different video, destroy old player
-      }
+    if (playerRef.current && currentVideoIdRef.current === videoId) {
+      return; // Same video, don't recreate
+    } else {
+      cleanup(); // Different video or no current video, destroy old player
     }
     
     // Create container if needed
@@ -114,6 +113,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = memo(({
         },
         events: {
           onReady: (event) => {
+            currentVideoIdRef.current = videoId; // Store current video ID
             if (onReady) {
               onReady(event.target);
             }
