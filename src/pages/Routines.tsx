@@ -4,18 +4,29 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { getRoutines } from "@/services/storageService";
+import { getRoutines, deleteRoutine } from "@/services/storageService";
 import { Routine } from "@/models/types";
 import RoutineCard from "@/components/RoutineCard";
 import { PlusCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Routines = () => {
   const [routines, setRoutines] = useState<Routine[]>([]);
+  const { toast } = useToast();
   
   useEffect(() => {
     const savedRoutines = getRoutines();
     setRoutines(savedRoutines);
   }, []);
+
+  const handleDeleteRoutine = (id: string) => {
+    deleteRoutine(id);
+    setRoutines(routines.filter(routine => routine.id !== id));
+    toast({
+      title: "Routine deleted",
+      description: "Your routine has been successfully deleted.",
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,7 +46,11 @@ const Routines = () => {
           {routines.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {routines.map((routine) => (
-                <RoutineCard key={routine.id} routine={routine} />
+                <RoutineCard 
+                  key={routine.id} 
+                  routine={routine} 
+                  onDelete={handleDeleteRoutine} 
+                />
               ))}
             </div>
           ) : (

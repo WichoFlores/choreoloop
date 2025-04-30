@@ -4,13 +4,15 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Routine } from "@/models/types";
 import { Link } from "react-router-dom";
-import { Play } from "lucide-react";
+import { Play, Edit } from "lucide-react";
+import DeleteRoutineDialog from "./DeleteRoutineDialog";
 
 interface RoutineCardProps {
   routine: Routine;
+  onDelete: (id: string) => void;
 }
 
-const RoutineCard = ({ routine }: RoutineCardProps) => {
+const RoutineCard = ({ routine, onDelete }: RoutineCardProps) => {
   const formattedDate = routine.lastPracticed 
     ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(routine.lastPracticed))
     : 'Never practiced';
@@ -48,9 +50,19 @@ const RoutineCard = ({ routine }: RoutineCardProps) => {
         <Link to={`/practice/${routine.id}`}>
           <Button variant="outline" size="sm">Practice</Button>
         </Link>
-        <Link to={`/edit/${routine.id}`}>
-          <Button variant="ghost" size="sm">Edit</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link to={`/edit/${routine.id}`}>
+            <Button variant="ghost" size="sm">
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+          </Link>
+          <DeleteRoutineDialog 
+            routineId={routine.id} 
+            routineName={routine.title} 
+            onDelete={onDelete} 
+          />
+        </div>
       </CardFooter>
     </Card>
   );
