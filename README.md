@@ -3,6 +3,8 @@
 
 ChoreoLoop is a web application designed to transform how dancers learn and practice choreography. By breaking down YouTube dance tutorials into manageable, loopable sections, ChoreoLoop helps dancers practice more efficiently and effectively.
 
+**Live Demo:** [choreoloop-groove-trainer.lovable.app](https://choreoloop-groove-trainer.lovable.app)
+
 ## 🌟 Features
 
 ### 🎬 Routine Creation
@@ -85,4 +87,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - YouTube API for video integration
 - The dance community for inspiration and feedback
 - All contributors to the open-source libraries used in this project
-
