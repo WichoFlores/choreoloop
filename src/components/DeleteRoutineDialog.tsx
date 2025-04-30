@@ -36,11 +36,11 @@ const DeleteRoutineDialog = ({ routineId, routineName, onDelete }: DeleteRoutine
           Delete
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-muted/30">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete "{routineName}" and all of its practice data.
+            This will permanently delete <span className="font-semibold">"{routineName}"</span> and all of its practice data.
             This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
