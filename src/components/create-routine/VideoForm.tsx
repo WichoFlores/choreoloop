@@ -16,12 +16,13 @@ export type VideoFormValues = z.infer<typeof formSchema>;
 
 interface VideoFormProps {
   onSubmit: (data: VideoFormValues) => void;
+  initialValues?: VideoFormValues;
 }
 
-const VideoForm: React.FC<VideoFormProps> = ({ onSubmit }) => {
+const VideoForm: React.FC<VideoFormProps> = ({ onSubmit, initialValues }) => {
   const form = useForm<VideoFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialValues || {
       videoUrl: "",
       title: "",
     },
@@ -57,7 +58,9 @@ const VideoForm: React.FC<VideoFormProps> = ({ onSubmit }) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="bg-gradient-dance w-full">Continue</Button>
+          <Button type="submit" className="bg-gradient-dance w-full">
+            {initialValues ? "Update Details" : "Continue"}
+          </Button>
         </form>
       </Form>
     </div>
