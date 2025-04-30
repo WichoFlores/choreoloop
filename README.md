@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
 
-## Project info
+# ChoreoLoop - Dance Practice Revolutionized
 
-**URL**: https://lovable.dev/projects/d4396381-5a90-48f7-b70f-2cd77db6717a
+ChoreoLoop is a web application designed to transform how dancers learn and practice choreography. By breaking down YouTube dance tutorials into manageable, loopable sections, ChoreoLoop helps dancers practice more efficiently and effectively.
 
-## How can I edit this code?
+## 🌟 Features
 
-There are several ways of editing your application.
+### 🎬 Routine Creation
+- Create practice routines from any YouTube dance tutorial
+- Break down choreography into manageable sections
+- Set custom repetition counts for each section
+- Track progress and practice history
 
-**Use Lovable**
+### 🔁 Smart Practice Mode
+- Loop specific sections of choreography
+- Control playback speed (0.5x, 0.75x, 1x)
+- Automated repetition counting
+- Progressive difficulty increase
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d4396381-5a90-48f7-b70f-2cd77db6717a) and start prompting.
+### 📊 Progress Tracking
+- Visual progress bars for each routine
+- Last practiced date tracking
+- Session summaries with achievements
 
-Changes made via Lovable will be committed automatically to this repo.
+## 💻 Technical Stack
 
-**Use your preferred IDE**
+This project is built with:
+- **React** with **TypeScript** for a robust frontend experience
+- **Vite** as the build tool for fast development
+- **Tailwind CSS** for responsive, utility-first styling
+- **shadcn/ui** for beautiful, accessible UI components
+- **React Router** for navigation
+- **LocalStorage** for persistent data management
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js (v16.0.0 or later)
+- npm or yarn
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone the repository
+git clone [your-repo-url]
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navigate to the project directory
+cd choreo-loop
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 📱 Application Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Home Page**: Introduction to ChoreoLoop with key features
+- **My Routines**: View, manage, and practice your saved routines
+- **Create Routine**: Set up a new practice routine from a YouTube tutorial
+- **Practice Mode**: Focused environment for practicing your routine sections
+- **About**: Learn more about the philosophy behind ChoreoLoop
+- **How It Works**: Step-by-step guide on using the application
 
-**Use GitHub Codespaces**
+## 👨‍💻 Development
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Adding a New Section to a Routine
+1. Navigate to Edit Routine
+2. Specify section name, start time, end time, and desired repetitions
+3. Save the section to add it to your routine
 
-## What technologies are used for this project?
+### Practice Flow
+1. Select a routine from your dashboard
+2. Begin with the first unpracticed section
+3. Complete the required repetitions at each speed level
+4. Progress through each section until the entire routine is mastered
 
-This project is built with:
+## 📝 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## How can I deploy this project?
+## 🙏 Acknowledgements
 
-Simply open [Lovable](https://lovable.dev/projects/d4396381-5a90-48f7-b70f-2cd77db6717a) and click on Share -> Publish.
+- YouTube API for video integration
+- The dance community for inspiration and feedback
+- All contributors to the open-source libraries used in this project
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
