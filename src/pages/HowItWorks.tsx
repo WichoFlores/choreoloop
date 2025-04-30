@@ -1,3 +1,4 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CheckCircle } from "lucide-react";
@@ -6,27 +7,27 @@ const steps = [
   {
     title: "Find Your Tutorial",
     description: "Start with any YouTube dance tutorial. Simply copy the URL and paste it into ChoreoLoop.",
-    image: "/lovable-uploads/7b3022f7-9d61-4d0f-8225-265d5f091a59.png" // Already updated with the provided image
+    image: "https://images.unsplash.com/photo-1576525865260-9f0e7cfb02b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     title: "Break It Down",
     description: "Mark start and end points to create manageable sections of the choreography.",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Woman using laptop for section marking
+    image: "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     title: "Set Your Reps",
     description: "Configure how many repetitions you need for each section to build muscle memory.",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Person using laptop, representing configuration
+    image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     title: "Control Your Speed",
     description: "Start slow and progressively increase to full tempo as you master each section.",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Tech interface representing speed control
+    image: "https://images.unsplash.com/photo-1535571393765-91bb88a5f07e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     title: "Track Progress",
     description: "ChoreoLoop saves your progress so you can pick up where you left off in your next session.",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Progress tracking/coding interface
+    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   }
 ];
 
