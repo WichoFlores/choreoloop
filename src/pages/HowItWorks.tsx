@@ -7,7 +7,7 @@ const steps = [
   {
     title: "Find Your Tutorial",
     description: "Start with any YouTube dance tutorial. Simply copy the URL and paste it into ChoreoLoop.",
-    image: "https://images.unsplash.com/photo-1576525865260-9f0e7cfb02b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: "/lovable-uploads/7b3022f7-9d61-4d0f-8225-265d5f091a59.png" // Updated image path
   },
   {
     title: "Break It Down",
